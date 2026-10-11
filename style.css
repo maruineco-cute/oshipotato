@@ -7,7 +7,7 @@
   --ink:#5a3320;
   --panel:#fffdf6;
 }
-*{box-sizing:border-box;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}   /* タップ時の青いハイライトを消す */
 html,body{margin:0;padding:0;}
 body{
   font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Yu Gothic UI","Meiryo",system-ui,sans-serif;
