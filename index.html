@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#e5383b">
+<meta name="description" content="推しの画像をフライドポテトの容器に入れて遊べるジェネレーター。画像は端末内だけで処理され、外部には送信されません。">
+<title>推しポテトメーカー</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E%F0%9F%8D%9F%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>🍟 推しポテトメーカー</h1>
+</header>
+
+<main>
+  <div id="stage-wrap">
+    <canvas id="stage" width="540" height="810" aria-label="推しポテトのゲーム画面"></canvas>
+  </div>
+
+  <div class="hud">
+    <div id="hintBar">推しをタップすると持ち上がるよ！ポテトはタップでつまんでね🍟</div>
+  </div>
+
+  <section id="controls" aria-label="操作パネル">
+    <div class="row">
+      <button id="btnUpload" class="btn primary" type="button">📷 推しをえらぶ</button>
+      <button id="btnPlay" class="btn yellow" type="button">▶️ 再生</button>
+      <button id="btnAdd" class="btn yellow" type="button">🍟 ついか</button>
+    </div>
+    <div class="row slider-row">
+      <label for="sizeRange">大きさ</label>
+      <input type="range" id="sizeRange" min="60" max="180" value="100" step="5" disabled>
+      <span id="sizeLabel">100%</span>
+      <button id="btnShot" class="btn ghost icon" type="button" title="画面を保存" aria-label="画面を保存">📸</button>
+      <button id="btnSound" class="btn ghost icon" type="button" title="おとオン/オフ" aria-label="おとオン/オフ">🔊</button>
+      <button id="btnSalt" class="btn ghost icon" type="button" title="しおをふる（キラキラ）" aria-label="しおをふる">🧂</button>
+    </div>
+    <div class="row">
+      <button id="btnMode" class="btn ghost" type="button" disabled>📐 いどう</button>
+      <button id="btnReset" class="btn ghost" type="button">🔄 はじめから</button>
+      <button id="btnHelp" class="btn ghost" type="button">❓ つかいかた</button>
+    </div>
+  </section>
+</main>
+
+<noscript>このあそびには JavaScript が必要です。有効にしてから開きなおしてください。</noscript>
+
+<input type="file" id="fileInput" accept="image/png,image/jpeg,image/webp" hidden>
+
+<!-- 初期画面（画像アップロード前） -->
+<div id="startOverlay" class="overlay">
+  <div class="panel">
+    <div class="big-title">🍟 推しポテトメーカー 🍟</div>
+    <p>推しを、フライドポテトの容器にイン！</p>
+    <ul class="steps">
+      <li>①  推しの画像をアップロード</li>
+      <li>② 🍟 ポテトの山に、推しが上からふわっと降ってくる！</li>
+      <li>③ 🤏 推しやポテトをタップしてつまもう</li>
+      <li>④ ▶️ 再生ボタンで、いつでも繰り返しあそべるよ</li>
+    </ul>
+    <button id="startUpload" class="btn primary big" type="button">📷 推し画像をえらぶ</button>
+    <div><button id="startSkip" class="linkbtn" type="button">画像なしで、ポテトだけ見てみる</button></div>
+    <p class="note">※ 画像は端末内だけで処理され、外部には送信されません。<br>対応フォーマット: PNG / JPEG / WebP（透過PNGもOK）</p>
+  </div>
+</div>
+
+<!-- つかいかた -->
+<div id="helpOverlay" class="overlay hidden">
+  <div class="panel">
+    <div class="big-title">❓ つかいかた</div>
+    <ul class="help-list">
+      <li>🤏 <b>推しをつまむ</b><br>推しをタップすると、ひょいっと持ち上がるよ。指をはなすと元にもどるよ。</li>
+      <li>🍟 <b>ポテトをつまむ</b><br>容器のポテトをタップすると、1本ずつつまんで取り出せるよ。食べちゃえ！</li>
+      <li>▶️ <b>再生</b><br>推しが降ってくる演出を、もう一度さいせいできるよ。</li>
+      <li>📸 <b>保存</b><br>📸ボタンで画像を表示。長押し(PCは右クリック)で保存できるよ。</li>
+      <li>🔊 <b>おと</b><br>タップ音のオン/オフ。推しは「ぼよん」、ポテトは「ぽこっ」。</li>
+      <li>💛 <b>リアクション</b><br>推しをタップすると❤✨♪がふわっと出るよ。<b>ダブルタップで大ジャンプ！5回に1回クルッと一回転、まれに❤バースト、さらにレアで❤が画面に迫る！</b></li>
+      <li>🧂 <b>しおをふる</b><br>🧂ボタンでキラキラの白いラメがさらさら。<b>7回に1回はレアカラー！</b>カラースプレー級ラメ＋ハートのシャワー🌈</li>
+      <li>➕ <b>ポテトついか</b><br>ボタンでポテトをまたザラザラふらせられるよ（最大64本）。</li>
+      <li>📏 <b>大きさスライダー</b><br>推しの表示サイズをかえられるよ。</li>
+      <li>📐 <b>いどう</b><br>推しをドラッグして、位置を調整できるよ。</li>
+      <li>🔄 <b>はじめから</b><br>サイズや位置もぜんぶリセットしてもう一度！</li>
+    </ul>
+    <button id="helpClose" class="btn primary big" type="button">とじる</button>
+  </div>
+</div>
+
+<!-- 保存用オーバーレイ（画像を長押しで保存） -->
+<div id="saveOverlay" class="overlay hidden">
+  <div class="panel">
+    <div class="big-title">📸 ほぞん</div>
+    <p>画像を<b>長押し</b>(PCは右クリック)で保存してね！</p>
+    <img id="saveImg" alt="推しポテトの保存画像">
+    <button id="saveClose" class="btn primary big" type="button">とじる</button>
+  </div>
+</div>
+
+<div id="toast" class="hidden" role="status"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
